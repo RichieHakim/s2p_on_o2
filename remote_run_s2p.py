@@ -39,6 +39,7 @@ for key in params['ops']:
     ops[key] = params['ops'][key]
 
 db = params['db']
+db['save_path0'] = str(dir_save)
 
 
 write_to_log(f'BATCH RUN STARTED. time: {time.ctime()}')
@@ -50,39 +51,49 @@ write_to_log(f'BATCH RUN FINISHED. time: {time.ctime()}')
 write_to_log(' ')
 
 
+
+##################
+#### PLOTTING ####
+##################
+
 ## TODO: save images of output_ops stuff
+import numpy as np
+import matplotlib.pyplot as plt
 
-# stats_file = Path(output_ops['save_path']).joinpath('stat.npy')
-# iscell = np.load(Path(output_ops['save_path']).joinpath('iscell.npy'), allow_pickle=True)[:, 0].astype(int)
-# stats = np.load(stats_file, allow_pickle=True)
-# print(stats[0].keys())
+stats_file = Path(output_ops['save_path']).joinpath('stat.npy')
+iscell = np.load(Path(output_ops['save_path']).joinpath('iscell.npy'), allow_pickle=True)[:, 0].astype(int)
+stats = np.load(stats_file, allow_pickle=True)
+print(stats[0].keys())
 
 
-# n_cells = len(stats)
+n_cells = len(stats)
 
-# h = np.random.rand(n_cells)
-# hsvs = np.zeros((2, Ly, Lx, 3), dtype=np.float32)
+Ly, Lx = output_ops['Ly'], output_ops['Lx']
+h = np.random.rand(n_cells)
+hsvs = np.zeros((2, Ly, Lx, 3), dtype=np.float32)
 
-# for i, stat in enumerate(stats):
-#     ypix, xpix, lam = stat['ypix'], stat['xpix'], stat['lam']
-#     hsvs[iscell[i], ypix, xpix, 0] = h[i]
-#     hsvs[iscell[i], ypix, xpix, 1] = 1
-#     hsvs[iscell[i], ypix, xpix, 2] = lam / lam.max()
+for i, stat in enumerate(stats):
+    ypix, xpix, lam = stat['ypix'], stat['xpix'], stat['lam']
+    hsvs[iscell[i], ypix, xpix, 0] = h[i]
+    hsvs[iscell[i], ypix, xpix, 1] = 1
+    hsvs[iscell[i], ypix, xpix, 2] = lam / lam.max()
 
-# from colorsys import hsv_to_rgb
-# rgbs = np.array([hsv_to_rgb(*hsv) for hsv in hsvs.reshape(-1, 3)]).reshape(hsvs.shape)
+from colorsys import hsv_to_rgb
+rgbs = np.array([hsv_to_rgb(*hsv) for hsv in hsvs.reshape(-1, 3)]).reshape(hsvs.shape)
 
-# plt.figure(figsize=(18,18))
-# plt.subplot(3, 1, 1)
-# plt.imshow(output_ops['max_proj'], cmap='gray')
-# plt.title("Registered Image, Max Projection")
+plt.figure(figsize=(18,18))
+plt.subplot(3, 1, 1)
+plt.imshow(output_ops['max_proj'], cmap='gray')
+plt.title("Registered Image, Max Projection")
 
-# plt.subplot(3, 1, 2)
-# plt.imshow(rgbs[1])
-# plt.title("All Cell ROIs")
+plt.subplot(3, 1, 2)
+plt.imshow(rgbs[1])
+plt.title("All Cell ROIs")
 
-# plt.subplot(3, 1, 3)
-# plt.imshow(rgbs[0])
-# plt.title("All non-Cell ROIs");
+plt.subplot(3, 1, 3)
+plt.imshow(rgbs[0])
+plt.title("All non-Cell ROIs");
 
-# plt.tight_layout()
+plt.tight_layout()
+
+plt.savefig(str(dir_save / 'batch_run_output.png'))

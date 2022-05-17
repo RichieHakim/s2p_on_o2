@@ -9,6 +9,7 @@ import copy
 
 import numpy as np
 import itertools
+import glob
 
 ### Import personal libraries
 # dir_github = '/media/rich/Home_Linux_partition/github_repos'
@@ -52,12 +53,12 @@ params_template = {
     },
 
     'db' : {
-        'data_path': dir_data,
-        'save_path0': dir_save,
+        'data_path': [dir_data],
+        # 'save_path0': dir_save,
     },
 
     'ops' : {
-        'fast_disk': ['/n/data1/hms/neurobio/sabatini/rich/analysis/suite2p_output/fast_disk'],
+        'fast_disk': '/n/data1/hms/neurobio/sabatini/rich/analysis/suite2p_output/fast_disk',
         'delete_bin': True,
         'mesoscan': False,
         'nplanes': 1,
@@ -95,8 +96,8 @@ params_template = {
 
 ## make params dicts with grid swept values
 params = copy.deepcopy(params_template)
-params = [params]
-# params = [container_helpers.deep_update_dict(params, ['db', 'data_path'], val) for val in dirs_data_all]
+# params = [params]
+# params = [container_helpers.deep_update_dict(params, ['db', 'save_path0'], str(Path(val).resolve() / (name_save+str(ii)))) for val in dir_save]
 # params = [container_helpers.deep_update_dict(param, ['db', 'save_path0'], val) for param, val in zip(params, dirs_save_all)]
 # params = container_helpers.flatten_list([[container_helpers.deep_update_dict(p, ['lr'], val) for val in [0.00001, 0.0001, 0.001]] for p in params])
 
@@ -152,8 +153,8 @@ sbatch_config_list = \
 #SBATCH --partition=priority
 #SBATCH -c 20
 #SBATCH -n 1
-#SBATCH --mem=16GB
-#SBATCH --time=0-00:01:00
+#SBATCH --mem=32GB
+#SBATCH --time=0-02:00:00
 
 unset XDG_RUNTIME_DIR
 
