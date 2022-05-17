@@ -96,7 +96,7 @@ params_template = {
 
 ## make params dicts with grid swept values
 params = copy.deepcopy(params_template)
-# params = [params]
+params = [params]
 # params = [container_helpers.deep_update_dict(params, ['db', 'save_path0'], str(Path(val).resolve() / (name_save+str(ii)))) for val in dir_save]
 # params = [container_helpers.deep_update_dict(param, ['db', 'save_path0'], val) for param, val in zip(params, dirs_save_all)]
 # params = container_helpers.flatten_list([[container_helpers.deep_update_dict(p, ['lr'], val) for val in [0.00001, 0.0001, 0.001]] for p in params])
@@ -154,7 +154,7 @@ sbatch_config_list = \
 #SBATCH -c 20
 #SBATCH -n 1
 #SBATCH --mem=32GB
-#SBATCH --time=0-02:00:00
+#SBATCH --time=0-00:10:00
 
 unset XDG_RUNTIME_DIR
 

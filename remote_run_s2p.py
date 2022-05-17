@@ -63,7 +63,6 @@ import matplotlib.pyplot as plt
 stats_file = Path(output_ops['save_path']).joinpath('stat.npy')
 iscell = np.load(Path(output_ops['save_path']).joinpath('iscell.npy'), allow_pickle=True)[:, 0].astype(int)
 stats = np.load(stats_file, allow_pickle=True)
-print(stats[0].keys())
 
 
 n_cells = len(stats)

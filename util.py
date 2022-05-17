@@ -1,5 +1,7 @@
 import paramiko
 import time
+from pathlib import Path
+import os
 
 class ssh_interface():
     """
@@ -248,4 +250,91 @@ class ssh_interface():
             total_timeout=60,
             verbose=verbose,
         )
+        
+
+class sftp_interface():
+    """
+    Interface to sftp with a remote server.
+    Mostly a wrapper for paramiko.SFTPClient.
+    Tested on O2 cluster at Harvard.
+    RH 2022
+    """
+    def __init__(
+        self,
+        hostname="transfer.rc.hms.harvard.edu",
+        port=22,
+    ):
+        """
+        Args:
+            hostname (str):
+                Hostname of the remote server.
+            port (int):
+                Port of the remote server.
+        """
+        self.transport = paramiko.Transport((hostname, port))  ## open a transport object
+    def connect(
+        self,
+        username='rh183',
+        password=''
+    ):
+        """
+        Connect to the remote server.
+        Args:
+            username (str):
+                Username to log in with.
+            password (str):
+                Password to log in with.
+                Is not stored.
+        """
+        self.transport.connect(None, username, password)  ## authorization
+        self.sftp = paramiko.SFTPClient.from_transport(self.transport)  ## open sftp
+    
+    def put_dir(self, source, target):
+        '''
+        Uploads the contents of the source directory to the target path.
+        All subdirectories in source are created under target recusively.
+        Args:
+            source (str):
+                Path to the source directory (local).
+            target (str):
+                Path to the target directory (remote).
+        '''
+        source = Path(source).resolve()
+        target = Path(target).resolve()
+        
+        for item in os.listdir(source):
+            if os.path.isfile(source / item):
+                self.sftp.put(str(source / item) , str(target / item))
+            else:
+                self.mkdir_safe(str(target / item) , ignore_existing=True)
+                self.put_dir(source / item , target / item)
+        
+    def mkdir_safe(self, path_remote, mode=511, ignore_existing=False):
+        '''
+        Augments mkdir by adding an option to not fail if the folder exists.
+        Args:
+            path_remote (str):
+                Path to the remote directory.
+            mode (int):
+                Mode to set the directory to.   
+            ignore_existing (bool):
+                Whether or not to ignore existing folders.
+                If True, will not fail if the folder already exists.
+                If False, will fail if the folder already exists.
+        '''
+        try:
+            self.sftp.mkdir(path_remote, mode)
+        except IOError:
+            if ignore_existing:
+                pass
+            else:
+                raise
+
+
+def pw_encode(pw):
+    import base64
+    return base64.b64encode(pw.encode("utf-8"))
+def pw_decode(pw):
+    import base64
+    return base64.b64decode(pw).decode("utf-8")
         
