@@ -2,6 +2,7 @@ import paramiko
 import time
 from pathlib import Path
 import os
+from stat import S_ISDIR
 
 class ssh_interface():
     """
@@ -308,6 +309,27 @@ class sftp_interface():
             else:
                 self.mkdir_safe(str(target / item) , ignore_existing=True)
                 self.put_dir(source / item , target / item)
+
+    def get_dir(self, source, target):
+        '''
+        Downloads the contents of the source directory to the target path.
+        All subdirectories in source are created under target recusively.
+        Args:
+            source (str):
+                Path to the source directory (remote).
+            target (str):
+                Path to the target directory (local).
+        '''
+        source = Path(source).resolve()
+        target = Path(target).resolve()
+        
+        for item in self.sftp.listdir(str(source)):
+            if self.isdir_remote(str(source / item)):
+                (target / item).mkdir(parents=True, exist_ok=True)
+                self.get_dir(source / item , target / item)
+            else:
+                self.sftp.get(str(source / item) , str(target / item))
+
         
     def mkdir_safe(self, path_remote, mode=511, ignore_existing=False):
         '''
@@ -329,6 +351,13 @@ class sftp_interface():
                 pass
             else:
                 raise
+    
+    def isdir_remote(self, path):
+        try:
+            return S_ISDIR(self.sftp.stat(path).st_mode)
+        except IOError:
+            #Path does not exist, so by definition not a directory
+            return False
 
 
 def pw_encode(pw):
