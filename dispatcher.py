@@ -26,7 +26,7 @@ args = sys.argv
 path_selfScript = args[0]
 dir_save = args[1]
 path_script = args[2]
-dir_data = args[3:]
+dir_data = args[3]
 
 print(path_selfScript, dir_save, path_script, dir_data)
 
