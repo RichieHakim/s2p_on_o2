@@ -290,7 +290,7 @@ class sftp_interface():
         self.transport.connect(None, username, password)  ## authorization
         self.sftp = paramiko.SFTPClient.from_transport(self.transport)  ## open sftp
     
-    def put_dir(self, source, target):
+    def put_dir(self, source, target, verbose=True):
         '''
         Uploads the contents of the source directory to the target path.
         All subdirectories in source are created under target recusively.
@@ -303,14 +303,17 @@ class sftp_interface():
         source = Path(source).resolve()
         target = Path(target).resolve()
         
+        
         for item in os.listdir(source):
             if os.path.isfile(source / item):
+                if verbose:
+                    print(f'uploading {source / item}   to   {target / item}')
                 self.sftp.put(str(source / item) , str(target / item))
             else:
                 self.mkdir_safe(str(target / item) , ignore_existing=True)
                 self.put_dir(source / item , target / item)
 
-    def get_dir(self, source, target):
+    def get_dir(self, source, target, verbose=True):
         '''
         Downloads the contents of the source directory to the target path.
         All subdirectories in source are created under target recusively.
@@ -328,6 +331,8 @@ class sftp_interface():
                 (target / item).mkdir(parents=True, exist_ok=True)
                 self.get_dir(source / item , target / item)
             else:
+                if verbose:
+                    print(f'downloading {source / item}   to   {target / item}')
                 self.sftp.get(str(source / item) , str(target / item))
 
         
