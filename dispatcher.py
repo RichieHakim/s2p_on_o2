@@ -11,8 +11,8 @@ import numpy as np
 import itertools
 
 ### Import personal libraries
-dir_github = '/media/rich/Home_Linux_partition/github_repos'
-# dir_github = '/n/data1/hms/neurobio/sabatini/rich/github_repos'
+# dir_github = '/media/rich/Home_Linux_partition/github_repos'
+dir_github = '/n/data1/hms/neurobio/sabatini/rich/github_repos'
 
 import sys
 sys.path.append(dir_github)
@@ -26,22 +26,22 @@ args = sys.argv
 path_selfScript = args[0]
 dir_save = args[1]
 path_script = args[2]
-dirs_data_all = args[3:]
+dir_data = args[3:]
 
-print(path_selfScript, dir_save, path_script, dirs_data_all)
+print(path_selfScript, dir_save, path_script, dir_data)
 
 ## set paths
-dir_save = '/n/data1/hms/neurobio/sabatini/rich/analysis/suite2p_output/'
+# dir_save = '/n/data1/hms/neurobio/sabatini/rich/analysis/suite2p_output/'
 Path(dir_save).mkdir(parents=True, exist_ok=True)
 
 
-path_script = '/n/data1/hms/neurobio/sabatini/rich/github_repos/s2p_on_o2/remote_run_s2p.py'
+# path_script = '/n/data1/hms/neurobio/sabatini/rich/github_repos/s2p_on_o2/remote_run_s2p.py'
 
 
 ### Define directories for data and output.
 ## length of both lists should be the same
-dirs_data_all = ['/n/data1/hms/neurobio/sabatini/rich/analysis/suite2p_output']
-dirs_save_all = [str(Path(dir_save) / 'test_s2p_on_o2')]
+# dirs_data_all = ['/n/data1/hms/neurobio/sabatini/rich/analysis/suite2p_output']
+# dirs_save_all = [str(Path(dir_save) / 'test_s2p_on_o2')]
 
 
 
@@ -52,98 +52,42 @@ params_template = {
     },
 
     'db' : {
-        'data_path': ['replace_with_data_path'],
-        'save_path0': ['replace_with_save_path'],
+        'data_path': dir_data,
+        'save_path0': dir_save,
     },
 
     'ops' : {
-    #     'suite2p_version': '0.10.3',
-        'look_one_level_down': False,
-        'fast_disk': [],
+        'fast_disk': ['/n/data1/hms/neurobio/sabatini/rich/analysis/suite2p_output/fast_disk'],
         'delete_bin': True,
         'mesoscan': False,
-    #     'bruker': False,
-    #     'bruker_bidirectional': False,
-    #     'h5py': [],
-    #     'h5py_key': 'data',
-    #     'nwb_file': '',
-    #     'nwb_driver': '',
-    #     'nwb_series': '',
-        'save_path0': [],
-        'save_folder': [],
-        'subfolders': [],
-    #     'move_bin': False,
         'nplanes': 1,
         'nchannels': 1,
         'functional_chan': 1,
         'tau': 1.35,
         'fs': 5.14,
-    #     'force_sktiff': False,
-    #     'frames_include': -1,
         'multiplane_parallel': False,
-        'ignore_flyback': [],
         'preclassify': 0.0,
         'save_mat': False,
         'save_NWB': False,
         'combined': True,
         'aspect': 1.0,
         'do_bidiphase': False,
-        'bidiphase': 0,
-        'bidi_corrected': False,
         'do_registration': 1,
         'two_step_registration': False,
-        'keep_movie_raw': False,
-        'nimg_init': 300,
-        'batch_size': 500,
-        'maxregshift': 0.1,
+        'batch_size': 100,
         'align_by_chan': 1,
-        'reg_tif': False,
-        'reg_tif_chan2': False,
-        'subpixel': 10,
-        'smooth_sigma_time': 0,
-        'smooth_sigma': 1.15,
-        'th_badframes': 1.0,
-        'norm_frames': True,
-        'force_refImg': False,
-        'pad_fft': False,
         'nonrigid': True,
         'block_size': [128, 128],
-        'snr_thresh': 1.2,
-        'maxregshiftNR': 5,
-        '1Preg': False,
-        'spatial_hp': 42,
-        'spatial_hp_reg': 42,
-        'spatial_hp_detect': 25,
-        'pre_smooth': 0,
-        'spatial_taper': 40,
-        'roidetect': True,
-        'spikedetect': True,
-        'anatomical_only': 0,
-        'cellprob_threshold': 0.0,
-        'flow_threshold': 1.5,
-        'sparse_mode': True,
         'diameter': 12,
         'spatial_scale': 2,
         'connected': True,
-        'nbinned': 5000,
         'max_iterations': 20,
         'threshold_scaling': 1.0,
         'max_overlap': 0.75,
-        'high_pass': 100,
-        'denoise': False,
+        'denoise': True,
         'soma_crop': True,
         'neuropil_extract': True,
         'inner_neuropil_radius': 2,
-        'min_neuropil_pixels': 350,
-        'lam_percentile': 50.0,
-        'allow_overlap': False,
-        'use_builtin_classifier': False,
-        'classifier_path': 0,
-        'chan2_thres': 0.65,
-        'baseline': 'maximin',
-        'win_baseline': 60.0,
-        'sig_baseline': 10.0,
-        'prctile_baseline': 8.0,
         'neucoeff': 0.7
     }
 }
@@ -151,11 +95,12 @@ params_template = {
 
 ## make params dicts with grid swept values
 params = copy.deepcopy(params_template)
+params = [params]
 # params = [container_helpers.deep_update_dict(params, ['db', 'data_path'], val) for val in dirs_data_all]
 # params = [container_helpers.deep_update_dict(param, ['db', 'save_path0'], val) for param, val in zip(params, dirs_save_all)]
 # params = container_helpers.flatten_list([[container_helpers.deep_update_dict(p, ['lr'], val) for val in [0.00001, 0.0001, 0.001]] for p in params])
 
-params_unchanging, params_changing = container_helpers.find_differences_across_dictionaries(params)
+# params_unchanging, params_changing = container_helpers.find_differences_across_dictionaries(params)
 
 
 ## notes that will be saved as a text file in the outer directory
@@ -177,8 +122,8 @@ shutil.copy2(path_script, str(Path(dir_save) / Path(path_script).name));
 ## save parameters to file
 parameters_batch = {
     'params': params,
-    'params_unchanging': params_unchanging,
-    'params_changing': params_changing
+    # 'params_unchanging': params_unchanging,
+    # 'params_changing': params_changing
 }
 import json
 with open(str(Path(dir_save) / 'parameters_batch.json'), 'w') as f:
