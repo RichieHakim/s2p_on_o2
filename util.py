@@ -353,11 +353,21 @@ class sftp_interface():
                 raise
     
     def isdir_remote(self, path):
+        """
+        Checks if a remote path is a directory.
+        Args:
+            path (str):
+                Path to the remote directory.
+        """
         try:
             return S_ISDIR(self.sftp.stat(path).st_mode)
         except IOError:
             #Path does not exist, so by definition not a directory
             return False
+
+    def close(self):
+        self.sftp.close()
+        self.transport.close()
 
 
 def pw_encode(pw):
