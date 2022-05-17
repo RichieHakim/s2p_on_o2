@@ -96,3 +96,6 @@ plt.title("All non-Cell ROIs");
 plt.tight_layout()
 
 plt.savefig(str(dir_save / 'batch_run_output.png'))
+
+write_to_log(f'SAVING FIGURES FINISHED. time: {time.ctime()}')
+write_to_log('RUN COMPLETE')

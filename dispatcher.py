@@ -27,9 +27,10 @@ args = sys.argv
 path_selfScript = args[0]
 dir_save = args[1]
 path_script = args[2]
-dir_data = args[3]
+name_job = args[3]
+dir_data = args[4]
 
-print(path_selfScript, dir_save, path_script, dir_data)
+print(path_selfScript, dir_save, path_script, name_job, dir_data)
 
 ## set paths
 # dir_save = '/n/data1/hms/neurobio/sabatini/rich/analysis/suite2p_output/'
@@ -120,15 +121,15 @@ shutil.copy2(path_script, str(Path(dir_save) / Path(path_script).name));
 
 
 
-## save parameters to file
-parameters_batch = {
-    'params': params,
-    # 'params_unchanging': params_unchanging,
-    # 'params_changing': params_changing
-}
-import json
-with open(str(Path(dir_save) / 'parameters_batch.json'), 'w') as f:
-    json.dump(parameters_batch, f)
+# ## save parameters to file
+# parameters_batch = {
+#     'params': params,
+#     # 'params_unchanging': params_unchanging,
+#     # 'params_changing': params_changing
+# }
+# import json
+# with open(str(Path(dir_save) / 'parameters_batch.json'), 'w') as f:
+#     json.dump(parameters_batch, f)
 
 # with open(str(Path(dir_save) / 'parameters_batch.json')) as f:
 #     test = json.load(f)
@@ -139,7 +140,7 @@ paths_scripts = [path_script]
 params_list = params
 # sbatch_config_list = [sbatch_config]
 max_n_jobs=1
-name_save='jobNum_'
+name_save=name_job
 
 
 ## define print log paths
