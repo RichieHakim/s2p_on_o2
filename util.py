@@ -349,6 +349,7 @@ class sftp_interface():
     def mkdir_safe(self, path_remote, mode=511, ignore_existing=False):
         '''
         Augments mkdir by adding an option to not fail if the folder exists.
+        Will fail if the outer directory does not exist.
         Args:
             path_remote (str):
                 Path to the remote directory.
@@ -366,6 +367,30 @@ class sftp_interface():
                 pass
             else:
                 raise
+    
+    def mkdir_p(self, dir_remote):
+        """
+        Change to this directory, recursively making new folders if needed.
+        Returns True if any folders were created.
+        Args:
+            dir_remote (str):
+                Path to the remote directory.
+        """
+        if dir_remote == '/':
+            # absolute path so change directory to root
+            self.sftp.chdir('/')
+            return
+        if dir_remote == '':
+            # top-level relative directory must exist
+            return
+        try:
+            self.sftp.chdir(dir_remote) # sub-directory exists
+        except IOError:
+            dirname, basename = os.path.split(dir_remote.rstrip('/'))
+            self.mkdir_p(dirname) # make parent directories
+            self.sftp.mkdir(basename) # sub-directory missing, so created it
+            self.sftp.chdir(basename)
+            return True
     
     def isdir_remote(self, path):
         """

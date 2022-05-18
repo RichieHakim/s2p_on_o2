@@ -29,7 +29,8 @@ dir_save = args[1]
 path_script = args[2]
 name_job = args[3]
 dir_fastDisk = args[4]
-dir_data = args[5]
+name_slurm = args[5]
+dir_data = args[6]
 
 print(path_selfScript, dir_save, path_script, name_job, dir_data)
 
@@ -150,7 +151,7 @@ paths_log = [str(Path(dir_save) / f'{name_save}{jobNum}' / 'print_log_%j.log') f
 ## define slurm SBATCH parameters
 sbatch_config_list = \
 [f"""#!/usr/bin/bash
-#SBATCH --job-name=suite2p
+#SBATCH --job-name={name_slurm}
 #SBATCH --output={path}
 #SBATCH --partition=short
 #SBATCH -c 20
