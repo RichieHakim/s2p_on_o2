@@ -28,7 +28,8 @@ path_selfScript = args[0]
 dir_save = args[1]
 path_script = args[2]
 name_job = args[3]
-dir_data = args[4]
+dir_fastDisk = args[4]
+dir_data = args[5]
 
 print(path_selfScript, dir_save, path_script, name_job, dir_data)
 
@@ -59,7 +60,7 @@ params_template = {
     },
 
     'ops' : {
-        'fast_disk': '/n/data1/hms/neurobio/sabatini/rich/analysis/suite2p_output/fast_disk',
+        'fast_disk': dir_fastDisk,
         'delete_bin': True,
         'mesoscan': False,
         'nplanes': 1,
@@ -151,11 +152,11 @@ sbatch_config_list = \
 [f"""#!/usr/bin/bash
 #SBATCH --job-name=suite2p
 #SBATCH --output={path}
-#SBATCH --partition=priority
+#SBATCH --partition=short
 #SBATCH -c 20
 #SBATCH -n 1
-#SBATCH --mem=32GB
-#SBATCH --time=0-00:10:00
+#SBATCH --mem=150GB
+#SBATCH --time=0-06:00:00
 
 unset XDG_RUNTIME_DIR
 

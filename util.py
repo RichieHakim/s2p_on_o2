@@ -132,6 +132,7 @@ class ssh_interface():
         partial_match=True,
         recv_timeout=0.3,
         total_timeout=60,
+        sleep_time = 0.1,
         verbose=None,
     ):
         """
@@ -146,6 +147,9 @@ class ssh_interface():
                  check iteration.
             total_timeout (float):
                 Total time to wait for the string.
+            sleep_time (float):
+                Time to sleep between checks.
+                Allows for keyboard interrupts.
             verbose (bool):
                 Whether or not to print progress.
                 0/False: no printing
@@ -179,6 +183,8 @@ class ssh_interface():
                 if str_success == out:
                     success = True
             
+            time.sleep(sleep_time)
+
             if time.time() - t_start > total_timeout:
                 break
         
