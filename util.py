@@ -204,6 +204,7 @@ class ssh_interface():
         password='',
         passcode_method=1,
         verbose=1,
+        skip_passcode=False,
     ):
         """
         Connect to the O2 cluster.
@@ -226,6 +227,8 @@ class ssh_interface():
                 1/True: will print recv outputs.
                 2: will print expect progress.
                 None: will default to self.verbose (1 or 2).
+            skip_passcode (bool):
+                Whether or not to skip the passcode step.
         """
         self.connect(
             hostname=hostname,
@@ -234,15 +237,16 @@ class ssh_interface():
             port=22
         )
         
-        self.expect(
-            str_success=f'Passcode or option (1-3)',
-            partial_match=True,
-            recv_timeout=0.3,
-            total_timeout=60,
-            verbose=verbose,
-        )
-        
-        self.send(cmd=str(passcode_method))
+        if skip_passcode==False:
+            self.expect(
+                str_success=f'Passcode or option (1-3)',
+                partial_match=True,
+                recv_timeout=0.3,
+                total_timeout=60,
+                verbose=verbose,
+            )
+            
+            self.send(cmd=str(passcode_method))
         
         self.expect(
             str_success=f'[{username}@',
