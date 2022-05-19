@@ -83,7 +83,7 @@ params_template = {
         'nonrigid': True,
         'block_size': [128, 128],
         'diameter': 12,
-        'spatial_scale': 2,
+        # 'spatial_scale': 2,
         'connected': True,
         'max_iterations': 20,
         'threshold_scaling': 1.0,
@@ -153,10 +153,10 @@ sbatch_config_list = \
 [f"""#!/usr/bin/bash
 #SBATCH --job-name={name_slurm}
 #SBATCH --output={path}
-#SBATCH --partition=short
+#SBATCH --partition=priority
 #SBATCH -c 20
 #SBATCH -n 1
-#SBATCH --mem=150GB
+#SBATCH --mem=240GB
 #SBATCH --time=0-06:00:00
 
 unset XDG_RUNTIME_DIR
