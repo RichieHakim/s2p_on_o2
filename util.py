@@ -283,6 +283,7 @@ class sftp_interface():
                 Port of the remote server.
         """
         self.transport = paramiko.Transport((hostname, port))  ## open a transport object
+        
     def connect(
         self,
         username='rh183',
