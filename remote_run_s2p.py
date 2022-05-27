@@ -1,3 +1,7 @@
+# check environment
+import os
+print(f'Conda Environment: ' + os.environ['CONDA_DEFAULT_ENV'])
+
 ### batch_run stuff
 from pathlib import Path
 
