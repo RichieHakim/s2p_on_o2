@@ -2,7 +2,8 @@ import paramiko
 import time
 from pathlib import Path
 import os
-from stat import S_ISDIR
+import stat
+import re
 
 class ssh_interface():
     """
@@ -401,10 +402,54 @@ class sftp_interface():
                 Path to the remote directory.
         """
         try:
-            return S_ISDIR(self.sftp.stat(path).st_mode)
+            return stat.S_ISDIR(self.sftp.stat(path).st_mode)
         except IOError:
             #Path does not exist, so by definition not a directory
             return False
+
+    def search_recursive(
+        self, 
+        cwd='.', 
+        search_pattern_re='', 
+        verbose=True
+    ):
+        """
+        Searches a remote directory recursively for files matching a pattern.
+        Args:
+            sftp (paramiko.SFTPClient):
+                SFTPClient object.
+            cwd (str):
+                Current working directory.
+            search_pattern_re (str):
+                Regular expression to search for.
+            verbose (bool):
+                Whether or not to print the paths of the files found.
+
+        Returns:
+            list:
+                List of paths to the files found.
+        """
+        search_results = []
+
+        def _recursive_search(search_results, sftp, cwd='.', search_pattern_re='', verbose=True):
+            contents = {name: stat.S_ISDIR(attr.st_mode)  for name, attr in zip(sftp.listdir(cwd), sftp.listdir_attr(cwd))}
+            for name, isdir  in contents.items():
+                if isdir:
+                    search_results = _recursive_search(
+                        search_results=search_results,
+                        sftp=sftp, 
+                        cwd=str(Path(cwd) / name), 
+                        search_pattern_re=search_pattern_re, 
+                        verbose=verbose
+                    )
+                elif re.search(search_pattern_re, name):
+                    path_found = str(Path(cwd) / name)
+                    search_results.append(path_found)
+                    if verbose:
+                        print(path_found)
+            return search_results
+
+        return _recursive_search(search_results, self.sftp, cwd=cwd, search_pattern_re=search_pattern_re, verbose=verbose)
 
     def close(self):
         self.sftp.close()
