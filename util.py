@@ -409,7 +409,7 @@ class sftp_interface():
 
     def search_recursive(
         self, 
-        cwd='.', 
+        path='.', 
         search_pattern_re='', 
         verbose=True
     ):
@@ -418,7 +418,7 @@ class sftp_interface():
         Args:
             sftp (paramiko.SFTPClient):
                 SFTPClient object.
-            cwd (str):
+            path (str):
                 Current working directory.
             search_pattern_re (str):
                 Regular expression to search for.
@@ -449,7 +449,7 @@ class sftp_interface():
                         print(path_found)
             return search_results
 
-        return _recursive_search(search_results, self.sftp, cwd=cwd, search_pattern_re=search_pattern_re, verbose=verbose)
+        return _recursive_search(search_results, self.sftp, cwd=path, search_pattern_re=search_pattern_re, verbose=verbose)
 
     def close(self):
         self.sftp.close()
